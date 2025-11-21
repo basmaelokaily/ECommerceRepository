@@ -1,18 +1,21 @@
 
+using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Writers;
 using Presistences.Data;
 
 namespace ECommerce
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddDbContext<StoreDbContext>(options => {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
@@ -21,6 +24,7 @@ namespace ECommerce
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+            await InitializeDbAsync(app);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -37,6 +41,12 @@ namespace ECommerce
             app.MapControllers();
 
             app.Run();
+
+            async Task InitializeDbAsync(WebApplication app){
+                using var scope = app.Services.CreateScope();
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                await dbInitializer.InitializeAsync();
+            }
         }
     }
 }
