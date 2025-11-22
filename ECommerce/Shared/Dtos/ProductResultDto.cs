@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared
+namespace Shared.Dtos
 {
     //Record special type was introduced c#9.0
     //based On value not ref & immutable

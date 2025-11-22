@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction.Contracts;
-using Shared;
+using Shared.Dtos;
+using Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,8 @@ namespace Presentation.Controllers
     {
         #region GetAllProducts
         [HttpGet] // GET: api/products/products
-        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProducts()
-            => Ok(await serviceManager.ProductService.GetAllProductsAsync());
+        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProducts(ProductSortingOptions sort)
+            => Ok(await serviceManager.ProductService.GetAllProductsAsync(sort));
         #endregion
 
         #region GetAllBrands

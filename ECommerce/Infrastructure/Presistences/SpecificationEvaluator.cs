@@ -20,6 +20,11 @@ namespace Presistences
             {
                 query = specifications.IncludeExpressions.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
             }
+            if(specifications.OrderBy is not null)
+                query = query.OrderBy(specifications.OrderBy);
+            else if(specifications.OrderByDesc is not null)
+                query = query.OrderByDescending(specifications.OrderByDesc);
+
             return query;
         }
     }

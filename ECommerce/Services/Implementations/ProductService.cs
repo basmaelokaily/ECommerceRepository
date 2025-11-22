@@ -3,7 +3,8 @@ using Domain.Contracts;
 using Domain.Entities.ProductModule;
 using Services.Abstraction.Contracts;
 using Services.Specifications;
-using Shared;
+using Shared.Dtos;
+using Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +25,9 @@ namespace Services.Implementations
             return brandsResult;
         }
 
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync()
+        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(ProductSortingOptions sort)
         {
-            var products = await _uniteOfWork.GetRepository<Product, int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications());
+            var products = await _uniteOfWork.GetRepository<Product, int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications(sort));
             var productsResult = _mapper.Map<IEnumerable<ProductResultDto>>(products);
             return productsResult;
         }
