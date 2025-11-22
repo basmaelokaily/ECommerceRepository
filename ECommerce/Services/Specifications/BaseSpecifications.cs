@@ -21,7 +21,6 @@ namespace Services.Specifications
 
         #endregion
 
-
         #region order by
         public Expression<Func<TEntity, object>>? OrderBy { get; private set; }
         public Expression<Func<TEntity, object>>? OrderByDesc { get; private set; }
@@ -35,6 +34,19 @@ namespace Services.Specifications
         public List<Expression<Func<TEntity, object>>> IncludeExpressions { get; } = new();
         protected void AddIncludes(Expression<Func<TEntity, object>> includeExpression)
             => IncludeExpressions.Add(includeExpression);
+        #endregion
+
+        #region pagination
+        public int Skip { get; private set; }
+        public int Take { get; private set; }
+        public bool IsPaginated { get; private set; }
+        protected void ApplyPagination(int pageIndex, int pagesize)
+        {
+            IsPaginated = true;
+            //we have x products lets say 20 page size is 5 i want the contents of page 3
+            Take = pagesize;
+            Skip = (pageIndex - 1) * pagesize;
+        }
         #endregion
 
     }

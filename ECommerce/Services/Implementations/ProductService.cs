@@ -5,6 +5,7 @@ using Services.Abstraction.Contracts;
 using Services.Specifications;
 using Shared.Dtos;
 using Shared.Enums;
+using Shared.types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +26,13 @@ namespace Services.Implementations
             return brandsResult;
         }
 
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(ProductSortingOptions sort, int? typeId, int? brandId)
+        public async Task<PaginatedResult<ProductResultDto>> GetAllProductsAsync(ProductSpecParams parameters)
         {
-            var products = await _uniteOfWork.GetRepository<Product, int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications(sort, typeId, brandId));
+            var products = await _uniteOfWork.GetRepository<Product, int>().GetAllAsync(new ProductWithBrandAndTypeSpecifications(parameters));
             var productsResult = _mapper.Map<IEnumerable<ProductResultDto>>(products);
-            return productsResult;
+            var pageSize = productsResult.Count();
+            var totalCount = await _uniteOfWork.GetRepository<Product, int>().CountAsync(new ProductCountSpecifications(parameters));
+            return new PaginatedResult<ProductResultDto>(parameters.PageIndex, pageSize, totalCount, productsResult);
         }
 
         public async Task<IEnumerable<TypeResultDto>> GetAllTypesAsync()

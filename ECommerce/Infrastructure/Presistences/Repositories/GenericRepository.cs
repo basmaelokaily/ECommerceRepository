@@ -19,6 +19,9 @@ namespace Presistences.Repositories
         public async Task AddAsync(TEntity entity)
             => _dbContext.Set<TEntity>().AddAsync(entity);
 
+        public async Task<int> CountAsync(ISpecifications<TEntity, TKey> specifications)
+            => await ApplySpecifications(specifications).CountAsync();
+
         public void Delete(TEntity entity)
             => _dbContext.Set<TEntity>().Remove(entity);
 

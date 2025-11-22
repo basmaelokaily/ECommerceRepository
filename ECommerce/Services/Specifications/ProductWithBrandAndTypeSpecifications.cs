@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.ProductModule;
 using Shared.Enums;
+using Shared.types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +12,17 @@ namespace Services.Specifications
     internal class ProductWithBrandAndTypeSpecifications : BaseSpecifications<Product, int>
     {
         //query = _dbCOntext.Set<Product>().where(p => p.ID == 5).include(p => p.productBrand).include(p => p.productType)
-        public ProductWithBrandAndTypeSpecifications(ProductSortingOptions sort, int? typeId, int? brandId) : base(
+        public ProductWithBrandAndTypeSpecifications(ProductSpecParams parameters) : base(
             product => 
             //if it has no value
-            (!typeId.HasValue || product.TypeId == typeId.Value) && 
-            (!brandId.HasValue || product.BrandId == brandId.Value)
+            (!parameters.TypeId.HasValue || product.TypeId == parameters.TypeId.Value) && 
+            (!parameters.BrandId.HasValue || product.BrandId == parameters.BrandId.Value) && 
+            (string.IsNullOrWhiteSpace(parameters.Search) || product.Name.ToLower().Contains(parameters.Search.ToLower().Trim()))
             )
         {
             AddIncludes(p => p.ProductBrand);
             AddIncludes(p => p.ProductType);
-            switch(sort)
+            switch(parameters.Sort)
             {
                 case ProductSortingOptions.NameAsc:
                     SetOrderBy(p => p.Name);
@@ -39,6 +41,8 @@ namespace Services.Specifications
                     break;
 
             }
+
+            ApplyPagination(parameters.PageIndex, parameters.PageSize); 
         }
 
         public ProductWithBrandAndTypeSpecifications(int id) : base(p => p.Id == id)

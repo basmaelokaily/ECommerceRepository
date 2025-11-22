@@ -2,6 +2,7 @@
 using Services.Abstraction.Contracts;
 using Shared.Dtos;
 using Shared.Enums;
+using Shared.types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,10 @@ namespace Presentation.Controllers
     {
         #region GetAllProducts
         [HttpGet] // GET: api/products/products
-        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProducts(ProductSortingOptions sort, int? typeId, int? brandId)
-            => Ok(await serviceManager.ProductService.GetAllProductsAsync(sort, typeId, brandId));
+        //once the parameter number is greater than three its best to define a user defined type
+        //instead of sending all of that 
+        public async Task<ActionResult<PaginatedResult<ProductResultDto>>> GetAllProducts([FromQuery]ProductSpecParams parameters)
+            => Ok(await serviceManager.ProductService.GetAllProductsAsync(parameters));
         #endregion
 
         #region GetAllBrands
