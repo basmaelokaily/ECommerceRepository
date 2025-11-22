@@ -11,7 +11,12 @@ namespace Services.Specifications
     internal class ProductWithBrandAndTypeSpecifications : BaseSpecifications<Product, int>
     {
         //query = _dbCOntext.Set<Product>().where(p => p.ID == 5).include(p => p.productBrand).include(p => p.productType)
-        public ProductWithBrandAndTypeSpecifications(ProductSortingOptions sort) : base(null)
+        public ProductWithBrandAndTypeSpecifications(ProductSortingOptions sort, int? typeId, int? brandId) : base(
+            product => 
+            //if it has no value
+            (!typeId.HasValue || product.TypeId == typeId.Value) && 
+            (!brandId.HasValue || product.BrandId == brandId.Value)
+            )
         {
             AddIncludes(p => p.ProductBrand);
             AddIncludes(p => p.ProductType);
