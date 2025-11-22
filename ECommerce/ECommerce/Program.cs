@@ -1,9 +1,11 @@
 
 using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Writers;
 using Presistences.Data;
 using Presistences.Repositories;
+using Services;
+using Services.Abstraction.Contracts;
+using Services.Implementations;
 
 namespace ECommerce
 {
@@ -20,9 +22,10 @@ namespace ECommerce
             builder.Services.AddDbContext<StoreDbContext>(options => {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-
             builder.Services.AddScoped<IUniteOfWork, UniteOfWork>();
-            
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddAutoMapper(a => { }, typeof(AssemblyReference).Assembly);
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -39,6 +42,7 @@ namespace ECommerce
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
             app.UseAuthorization();
 
 
