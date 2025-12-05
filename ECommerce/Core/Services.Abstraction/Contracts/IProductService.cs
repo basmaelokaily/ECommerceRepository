@@ -1,4 +1,4 @@
-﻿using Shared.Dtos;
+﻿using Shared.Dtos.ProductModule;
 using Shared.Enums;
 using Shared.types;
 using System;

@@ -10,5 +10,6 @@ namespace Services.Abstraction.Contracts
     {
         // proberty signiture for each and every service that i have
         public IProductService ProductService { get; }
+        public IBasketService BasketService { get; }
     }
 }

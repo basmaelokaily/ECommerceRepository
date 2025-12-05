@@ -1,5 +1,9 @@
-
+﻿
 using Domain.Contracts;
+using ECommerce.Extensions;
+using ECommerce.Factories;
+using ECommerce.Middlewares;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Presistences.Data;
 using Presistences.Repositories;
@@ -16,28 +20,23 @@ namespace ECommerce
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddWebApiServices();
 
-            builder.Services.AddControllers();
-            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-            builder.Services.AddDbContext<StoreDbContext>(options => {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-            builder.Services.AddScoped<IUniteOfWork, UniteOfWork>();
-            builder.Services.AddScoped<IServiceManager, ServiceManager>();
-            builder.Services.AddAutoMapper(a => { }, typeof(AssemblyReference).Assembly);
+            //infrastructure
+            builder.Services.AddInfrastructureServices(builder.Configuration);
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //core service
+            builder.Services.AddCoreServices();
 
             var app = builder.Build();
-            await InitializeDbAsync(app);
 
-            // Configure the HTTP request pipeline.
+            #region configure kestrel middlewares
+            app.UseCustomExceptionMiddleWares();
+            await app.SeedDbAsync();
+
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleware();
             }
 
             app.UseHttpsRedirection();
@@ -49,12 +48,8 @@ namespace ECommerce
             app.MapControllers();
 
             app.Run();
+            #endregion
 
-            async Task InitializeDbAsync(WebApplication app){
-                using var scope = app.Services.CreateScope();
-                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-                await dbInitializer.InitializeAsync();
-            }
         }
     }
 }

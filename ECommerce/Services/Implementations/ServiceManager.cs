@@ -9,9 +9,14 @@ using System.Threading.Tasks;
 
 namespace Services.Implementations
 {
-    public class ServiceManager(IUniteOfWork uniteOfWork, IMapper mapper) : IServiceManager
+    public class ServiceManager(IUniteOfWork uniteOfWork, IMapper mapper, IBasketRepository basketRepository) : IServiceManager
     {
         private readonly Lazy<IProductService> productService = new Lazy<IProductService>(() => new ProductService(uniteOfWork, mapper));
+
+        private readonly Lazy<IBasketService> basketService = new Lazy<IBasketService>(() => new BasketService(basketRepository, mapper));
+
         public IProductService ProductService => productService.Value;
+
+        public IBasketService BasketService => basketService.Value;
     }
 }
